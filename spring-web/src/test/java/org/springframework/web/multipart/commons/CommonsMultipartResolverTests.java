@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,11 +46,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.MutablePropertyValues;
-import org.springframework.mock.web.test.MockFilterConfig;
-import org.springframework.mock.web.test.MockHttpServletRequest;
-import org.springframework.mock.web.test.MockHttpServletResponse;
-import org.springframework.mock.web.test.MockServletContext;
-import org.springframework.mock.web.test.PassThroughFilterChain;
+import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.context.WebApplicationContext;
@@ -60,6 +56,11 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.support.ByteArrayMultipartFileEditor;
 import org.springframework.web.multipart.support.MultipartFilter;
 import org.springframework.web.multipart.support.StringMultipartFileEditor;
+import org.springframework.web.testfixture.servlet.MockFilterConfig;
+import org.springframework.web.testfixture.servlet.MockHttpServletRequest;
+import org.springframework.web.testfixture.servlet.MockHttpServletResponse;
+import org.springframework.web.testfixture.servlet.MockServletContext;
+import org.springframework.web.testfixture.servlet.PassThroughFilterChain;
 import org.springframework.web.util.WebUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,6 +71,65 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @since 08.10.2003
  */
 public class CommonsMultipartResolverTests {
+
+	@Test
+	public void isMultipartWithDefaultSetting() {
+		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/");
+		assertThat(resolver.isMultipart(request)).isFalse();
+
+		request.setContentType(MediaType.MULTIPART_FORM_DATA_VALUE);
+		assertThat(resolver.isMultipart(request)).isTrue();
+
+		request.setContentType(MediaType.MULTIPART_MIXED_VALUE);
+		assertThat(resolver.isMultipart(request)).isTrue();
+
+		request.setContentType(MediaType.MULTIPART_RELATED_VALUE);
+		assertThat(resolver.isMultipart(request)).isTrue();
+
+		request = new MockHttpServletRequest("PUT", "/");
+		assertThat(resolver.isMultipart(request)).isFalse();
+
+		request.setContentType(MediaType.MULTIPART_FORM_DATA_VALUE);
+		assertThat(resolver.isMultipart(request)).isFalse();
+
+		request.setContentType(MediaType.MULTIPART_MIXED_VALUE);
+		assertThat(resolver.isMultipart(request)).isFalse();
+
+		request.setContentType(MediaType.MULTIPART_RELATED_VALUE);
+		assertThat(resolver.isMultipart(request)).isFalse();
+	}
+
+	@Test
+	public void isMultipartWithSupportedMethods() {
+		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+		resolver.setSupportedMethods("POST", "PUT");
+
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/");
+		assertThat(resolver.isMultipart(request)).isFalse();
+
+		request.setContentType(MediaType.MULTIPART_FORM_DATA_VALUE);
+		assertThat(resolver.isMultipart(request)).isTrue();
+
+		request.setContentType(MediaType.MULTIPART_MIXED_VALUE);
+		assertThat(resolver.isMultipart(request)).isTrue();
+
+		request.setContentType(MediaType.MULTIPART_RELATED_VALUE);
+		assertThat(resolver.isMultipart(request)).isTrue();
+
+		request = new MockHttpServletRequest("PUT", "/");
+		assertThat(resolver.isMultipart(request)).isFalse();
+
+		request.setContentType(MediaType.MULTIPART_FORM_DATA_VALUE);
+		assertThat(resolver.isMultipart(request)).isTrue();
+
+		request.setContentType(MediaType.MULTIPART_MIXED_VALUE);
+		assertThat(resolver.isMultipart(request)).isTrue();
+
+		request.setContentType(MediaType.MULTIPART_RELATED_VALUE);
+		assertThat(resolver.isMultipart(request)).isTrue();
+	}
 
 	@Test
 	public void withApplicationContext() throws Exception {
@@ -406,7 +466,6 @@ public class CommonsMultipartResolverTests {
 	}
 
 
-	@SuppressWarnings("serial")
 	private static class MockFileItem implements FileItem {
 
 		private String fieldName;

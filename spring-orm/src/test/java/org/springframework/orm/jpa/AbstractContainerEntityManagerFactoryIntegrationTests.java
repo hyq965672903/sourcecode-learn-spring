@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@ import javax.persistence.Query;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.core.testfixture.io.SerializationTestUtils;
 import org.springframework.orm.jpa.domain.DriversLicense;
 import org.springframework.orm.jpa.domain.Person;
-import org.springframework.util.SerializationTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -224,8 +224,7 @@ public abstract class AbstractContainerEntityManagerFactoryIntegrationTests
 		q.setFlushMode(FlushModeType.AUTO);
 		List<Person> people = q.getResultList();
 		assertThat(people.size()).isEqualTo(0);
-		assertThatExceptionOfType(Exception.class).isThrownBy(() ->
-				q.getSingleResult())
+		assertThatExceptionOfType(Exception.class).isThrownBy(q::getSingleResult)
 			.withMessageContaining("closed");
 		// We would typically expect an IllegalStateException, but Hibernate throws a
 		// PersistenceException. So we assert the contents of the exception message instead.

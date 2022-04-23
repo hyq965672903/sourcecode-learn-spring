@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.aop.TargetSource;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.aop.support.DefaultIntroductionAdvisor;
 import org.springframework.aop.target.SingletonTargetSource;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.BeanFactory;
@@ -37,16 +38,16 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.beans.testfixture.beans.ITestBean;
+import org.springframework.beans.testfixture.beans.IndexedTestBean;
+import org.springframework.beans.testfixture.beans.TestBean;
+import org.springframework.beans.testfixture.beans.factory.DummyFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.lang.Nullable;
-import org.springframework.tests.sample.beans.ITestBean;
-import org.springframework.tests.sample.beans.IndexedTestBean;
-import org.springframework.tests.sample.beans.TestBean;
-import org.springframework.tests.sample.beans.factory.DummyFactory;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -219,7 +220,7 @@ public class AutoProxyCreatorTests {
 
 		MutablePropertyValues pvs = new MutablePropertyValues();
 		pvs.add("proxyFactoryBean", "false");
-		sac.registerSingleton("testAutoProxyCreator", TestAutoProxyCreator.class, pvs);
+		sac.registerSingleton("testAutoProxyCreator", IntroductionTestAutoProxyCreator.class, pvs);
 
 		sac.registerSingleton("noInterfaces", NoInterfaces.class);
 		sac.registerSingleton("containerCallbackInterfacesOnly", ContainerCallbackInterfacesOnly.class);
@@ -248,9 +249,9 @@ public class AutoProxyCreatorTests {
 		singletonNoInterceptor.getName();
 		assertThat(tapc.testInterceptor.nrOfInvocations).isEqualTo(0);
 		singletonToBeProxied.getAge();
-		assertThat(tapc.testInterceptor.nrOfInvocations).isEqualTo(1);
-		prototypeToBeProxied.getSpouse();
 		assertThat(tapc.testInterceptor.nrOfInvocations).isEqualTo(2);
+		prototypeToBeProxied.getSpouse();
+		assertThat(tapc.testInterceptor.nrOfInvocations).isEqualTo(4);
 	}
 
 	@Test
@@ -404,7 +405,7 @@ public class AutoProxyCreatorTests {
 			else if (name.endsWith("ToBeProxied")) {
 				boolean isFactoryBean = FactoryBean.class.isAssignableFrom(beanClass);
 				if ((this.proxyFactoryBean && isFactoryBean) || (this.proxyObject && !isFactoryBean)) {
-					return new Object[] {this.testInterceptor};
+					return getAdvicesAndAdvisors();
 				}
 				else {
 					return DO_NOT_PROXY;
@@ -414,6 +415,10 @@ public class AutoProxyCreatorTests {
 				return PROXY_WITHOUT_ADDITIONAL_INTERCEPTORS;
 			}
 		}
+
+		protected Object[] getAdvicesAndAdvisors() {
+			return new Object[] {this.testInterceptor};
+		}
 	}
 
 
@@ -422,6 +427,17 @@ public class AutoProxyCreatorTests {
 
 		public FallbackTestAutoProxyCreator() {
 			setProxyTargetClass(false);
+		}
+	}
+
+
+	@SuppressWarnings("serial")
+	public static class IntroductionTestAutoProxyCreator extends TestAutoProxyCreator {
+
+		protected Object[] getAdvicesAndAdvisors() {
+			DefaultIntroductionAdvisor advisor = new DefaultIntroductionAdvisor(this.testInterceptor);
+			advisor.addInterface(Serializable.class);
+			return new Object[] {this.testInterceptor, advisor};
 		}
 	}
 

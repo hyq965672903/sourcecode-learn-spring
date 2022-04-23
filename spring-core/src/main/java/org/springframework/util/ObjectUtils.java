@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,7 +114,7 @@ public abstract class ObjectUtils {
 	 * Determine whether the given object is empty.
 	 * <p>This method supports the following object types.
 	 * <ul>
-	 * <li>{@code Optional}: considered empty if {@link Optional#empty()}</li>
+	 * <li>{@code Optional}: considered empty if not {@link Optional#isPresent()}</li>
 	 * <li>{@code Array}: considered empty if its length is zero</li>
 	 * <li>{@link CharSequence}: considered empty if its length is zero</li>
 	 * <li>{@link Collection}: delegates to {@link Collection#isEmpty()}</li>
@@ -128,18 +128,16 @@ public abstract class ObjectUtils {
 	 * @see Optional#isPresent()
 	 * @see ObjectUtils#isEmpty(Object[])
 	 * @see StringUtils#hasLength(CharSequence)
-	 * @see StringUtils#isEmpty(Object)
 	 * @see CollectionUtils#isEmpty(java.util.Collection)
 	 * @see CollectionUtils#isEmpty(java.util.Map)
 	 */
-	@SuppressWarnings("rawtypes")
 	public static boolean isEmpty(@Nullable Object obj) {
 		if (obj == null) {
 			return true;
 		}
 
 		if (obj instanceof Optional) {
-			return !((Optional) obj).isPresent();
+			return !((Optional<?>) obj).isPresent();
 		}
 		if (obj instanceof CharSequence) {
 			return ((CharSequence) obj).length() == 0;
@@ -148,10 +146,10 @@ public abstract class ObjectUtils {
 			return Array.getLength(obj) == 0;
 		}
 		if (obj instanceof Collection) {
-			return ((Collection) obj).isEmpty();
+			return ((Collection<?>) obj).isEmpty();
 		}
 		if (obj instanceof Map) {
-			return ((Map) obj).isEmpty();
+			return ((Map<?, ?>) obj).isEmpty();
 		}
 
 		// else

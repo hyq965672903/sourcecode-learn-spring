@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.server.ServletServerHttpRequest;
-import org.springframework.mock.web.test.MockHttpServletRequest;
-import org.springframework.mock.web.test.MockHttpServletResponse;
-import org.springframework.mock.web.test.MockServletConfig;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
@@ -59,6 +56,9 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
+import org.springframework.web.testfixture.servlet.MockHttpServletRequest;
+import org.springframework.web.testfixture.servlet.MockHttpServletResponse;
+import org.springframework.web.testfixture.servlet.MockServletConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -113,6 +113,20 @@ public class ResponseEntityExceptionHandlerTests {
 
 		ResponseEntity<Object> responseEntity = testException(ex);
 		assertThat(responseEntity.getHeaders().getAccept()).isEqualTo(acceptable);
+		assertThat(responseEntity.getHeaders().getAcceptPatch()).isEmpty();
+	}
+
+	@Test
+	public void patchHttpMediaTypeNotSupported() {
+		this.servletRequest = new MockHttpServletRequest("PATCH", "/");
+		this.request = new ServletWebRequest(this.servletRequest, this.servletResponse);
+
+		List<MediaType> acceptable = Arrays.asList(MediaType.APPLICATION_ATOM_XML, MediaType.APPLICATION_XML);
+		Exception ex = new HttpMediaTypeNotSupportedException(MediaType.APPLICATION_JSON, acceptable);
+
+		ResponseEntity<Object> responseEntity = testException(ex);
+		assertThat(responseEntity.getHeaders().getAccept()).isEqualTo(acceptable);
+		assertThat(responseEntity.getHeaders().getAcceptPatch()).isEqualTo(acceptable);
 	}
 
 	@Test

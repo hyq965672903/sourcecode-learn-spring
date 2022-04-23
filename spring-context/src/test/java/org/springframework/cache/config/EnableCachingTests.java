@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,9 @@ package org.springframework.cache.config;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.CacheTestUtils;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.CacheErrorHandler;
@@ -35,6 +36,13 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.testfixture.cache.AbstractCacheAnnotationTests;
+import org.springframework.context.testfixture.cache.CacheTestUtils;
+import org.springframework.context.testfixture.cache.SomeCustomKeyGenerator;
+import org.springframework.context.testfixture.cache.SomeKeyGenerator;
+import org.springframework.context.testfixture.cache.beans.AnnotatedClassCacheableService;
+import org.springframework.context.testfixture.cache.beans.CacheableService;
+import org.springframework.context.testfixture.cache.beans.DefaultCacheableService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -81,6 +89,7 @@ public class EnableCachingTests extends AbstractCacheAnnotationTests {
 		}
 		catch (IllegalStateException ex) {
 			assertThat(ex.getMessage().contains("no unique bean of type CacheManager")).isTrue();
+			assertThat(ex).hasCauseInstanceOf(NoUniqueBeanDefinitionException.class);
 		}
 	}
 
@@ -115,6 +124,7 @@ public class EnableCachingTests extends AbstractCacheAnnotationTests {
 		}
 		catch (IllegalStateException ex) {
 			assertThat(ex.getMessage().contains("no bean of type CacheManager")).isTrue();
+			assertThat(ex).hasCauseInstanceOf(NoSuchBeanDefinitionException.class);
 		}
 	}
 

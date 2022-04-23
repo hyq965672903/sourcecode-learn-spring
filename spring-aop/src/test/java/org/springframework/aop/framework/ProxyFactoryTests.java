@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,15 +33,15 @@ import org.springframework.aop.interceptor.DebugInterceptor;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.aop.support.DefaultIntroductionAdvisor;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
-import org.springframework.aop.support.DelegatingIntroductionInterceptor;
+import org.springframework.aop.testfixture.advice.CountingBeforeAdvice;
+import org.springframework.aop.testfixture.interceptor.NopInterceptor;
+import org.springframework.aop.testfixture.interceptor.TimestampIntroductionInterceptor;
+import org.springframework.beans.testfixture.beans.IOther;
+import org.springframework.beans.testfixture.beans.ITestBean;
+import org.springframework.beans.testfixture.beans.TestBean;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.Order;
-import org.springframework.tests.TimeStamped;
-import org.springframework.tests.aop.advice.CountingBeforeAdvice;
-import org.springframework.tests.aop.interceptor.NopInterceptor;
-import org.springframework.tests.sample.beans.IOther;
-import org.springframework.tests.sample.beans.ITestBean;
-import org.springframework.tests.sample.beans.TestBean;
+import org.springframework.core.testfixture.TimeStamped;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -183,7 +183,7 @@ public class ProxyFactoryTests {
 	}
 
 	@Test
-	public void testGetsAllInterfaces() throws Exception {
+	public void testGetsAllInterfaces() {
 		// Extend to get new interface
 		class TestBeanSubclass extends TestBean implements Comparable<Object> {
 			@Override
@@ -238,6 +238,16 @@ public class ProxyFactoryTests {
 		factory.addAdvice(0, diUnused);
 		assertThat(factory.adviceIncluded(diUnused)).isTrue();
 		assertThat(factory.countAdvicesOfType(NopInterceptor.class) == 2).isTrue();
+	}
+
+	@Test
+	public void testSealedInterfaceExclusion() {
+		// String implements ConstantDesc on JDK 12+, sealed as of JDK 17
+		ProxyFactory factory = new ProxyFactory(new String());
+		NopInterceptor di = new NopInterceptor();
+		factory.addAdvice(0, di);
+		Object proxy = factory.getProxy();
+		assertThat(proxy).isInstanceOf(CharSequence.class);
 	}
 
 	/**
@@ -368,30 +378,6 @@ public class ProxyFactoryTests {
 			return invocation.getMethod().invoke(target, invocation.getArguments());
 		});
 		assertThat(proxy.getName()).isEqualTo("tb");
-	}
-
-
-	@SuppressWarnings("serial")
-	private static class TimestampIntroductionInterceptor extends DelegatingIntroductionInterceptor
-			implements TimeStamped {
-
-		private long ts;
-
-		public TimestampIntroductionInterceptor() {
-		}
-
-		public TimestampIntroductionInterceptor(long ts) {
-			this.ts = ts;
-		}
-
-		public void setTime(long ts) {
-			this.ts = ts;
-		}
-
-		@Override
-		public long getTimeStamp() {
-			return ts;
-		}
 	}
 
 
