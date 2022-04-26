@@ -1,7 +1,6 @@
 package cn.hyqup.spring.config;
 
-import cn.hyqup.spring.bean.Person;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -12,13 +11,9 @@ import org.springframework.context.annotation.Configuration;
  * @date 2022/4/24
  * @description:
  */
+@ComponentScan("cn.hyqup.spring")
 @Configuration
 public class MainConfig {
 
-	@Bean
-	public Person person() {
-		Person person = new Person();
-		person.setName("李四");
-		return person;
-	}
+
 }

@@ -1,6 +1,6 @@
 package cn.hyqup.spring;
 
-import cn.hyqup.spring.bean.Person;
+import cn.hyqup.spring.bean.Cat;
 import cn.hyqup.spring.config.MainConfig;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -16,7 +16,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 public class AnnotationMainTest {
 	public static void main(String[] args) {
 		ApplicationContext applicationContext = new AnnotationConfigApplicationContext(MainConfig.class);
-		Person bean = applicationContext.getBean(Person.class);
+		Cat bean = applicationContext.getBean(Cat.class);
 		System.out.println(bean);
 	}
 }

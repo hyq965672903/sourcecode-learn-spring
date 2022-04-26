@@ -4,7 +4,6 @@ import lombok.Data;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
 
 /**
  * Copyright © 2022 灼华. All rights reserved.
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @description:
  */
 @Data
-@Component
+//@Component
 public class Person  implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;

@@ -580,6 +580,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 		// If we couldn't use the target type, try regular prediction.
 		if (predictedType == null) {
+			//  会执行 BeanPostProcessor 的 SmartInstantiationAwareBeanPostProcessor
 			predictedType = predictBeanType(beanName, mbd, typesToMatch);
 			if (predictedType == null) {
 				return false;
