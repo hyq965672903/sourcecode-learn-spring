@@ -25,7 +25,7 @@ public class MySmartInstantiationAwareBeanPostProcessor implements SmartInstanti
 	@Override
 	public Constructor<?>[] determineCandidateConstructors(Class<?> beanClass, String beanName) throws BeansException {
 		System.out.println("执行 MySmartInstantiationAwareBeanPostProcessor.determineCandidateConstructors .....................");
-		return new Constructor[0];
+		return null;
 	}
 
 	@Override

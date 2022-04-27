@@ -1,5 +1,6 @@
 package cn.hyqup.spring.bean;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,9 +12,14 @@ import org.springframework.stereotype.Component;
  * @description:
  */
 @Component
-public class Cat {
+public class Cat implements InitializingBean {
 
 	public Cat() {
 		System.out.println("猫被创建了");
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		System.out.println("执行 MyInitializingBean.afterPropertiesSet .....................");
 	}
 }

@@ -455,7 +455,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @see #doCreateBean
 	 */
 	@Override
-	protected Object createBean(String beanName, RootBeanDefinition mbd, @Nullable Object[] args)
+		protected Object createBean(String beanName, RootBeanDefinition mbd, @Nullable Object[] args)
 			throws BeanCreationException {
 
 		if (logger.isTraceEnabled()) {
