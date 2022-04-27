@@ -20,6 +20,14 @@ public class MyInstantiationAwareBeanPostProcessor implements InstantiationAware
 		System.out.println("MyInstantiationAwareBeanPostProcessor  构造器执行.....");
 	}
 
+
+	/**
+	 * 直接返回对象，不用spring创建
+	 * @param beanClass the class of the bean to be instantiated
+	 * @param beanName the name of the bean
+	 * @return
+	 * @throws BeansException
+	 */
 	@Override
 	public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
 		System.out.println("执行 MyInstantiationAwareBeanPostProcessor.postProcessBeforeInstantiation .....................");
@@ -27,6 +35,13 @@ public class MyInstantiationAwareBeanPostProcessor implements InstantiationAware
 		return null;
 	}
 
+	/**
+	 * 返回false 后续的后置处理器不再工作
+	 * @param bean the bean instance created, with properties not having been set yet
+	 * @param beanName the name of the bean
+	 * @return
+	 * @throws BeansException
+	 */
 	@Override
 	public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
 		System.out.println("执行 MyInstantiationAwareBeanPostProcessor.postProcessAfterInstantiation .....................");
@@ -34,6 +49,14 @@ public class MyInstantiationAwareBeanPostProcessor implements InstantiationAware
 		return true;
 	}
 
+	/**
+	 *
+	 * @param pvs the property values that the factory is about to apply (never {@code null})
+	 * @param bean the bean instance created, but whose properties have not yet been set
+	 * @param beanName the name of the bean
+	 * @return
+	 * @throws BeansException
+	 */
 	@Override
 	public PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName) throws BeansException {
 		System.out.println("执行 MyInstantiationAwareBeanPostProcessor.postProcessProperties .....................");
