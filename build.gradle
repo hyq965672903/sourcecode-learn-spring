@@ -331,6 +331,10 @@ configure([rootProject] + javaProjects) { project ->
                 freeCompilerArgs = ["-Xjsr305=strict"]
             }
         }
+        compileJava {
+            sourceCompatibility = '11'
+            targetCompatibility = '11'
+        }
     }
 
     test {
