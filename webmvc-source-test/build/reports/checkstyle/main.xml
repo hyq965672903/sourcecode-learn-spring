@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="8.22">
+<file name="D:\vcs_repo\sourcecode-learn-spring\webmvc-source-test\src\main\java\cn\hyqup\web\AppStarter.java">
+</file>
+<file name="D:\vcs_repo\sourcecode-learn-spring\webmvc-source-test\src\main\java\cn\hyqup\web\config\AppConfig.java">
+</file>
+<file name="D:\vcs_repo\sourcecode-learn-spring\webmvc-source-test\src\main\java\cn\hyqup\web\controller\HelloController.java">
+</file>
+</checkstyle>
